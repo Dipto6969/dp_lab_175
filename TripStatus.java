@@ -1,0 +1,3 @@
+enum TripStatus {
+    REQUESTED, ONGOING, COMPLETED, CANCELED;
+}
