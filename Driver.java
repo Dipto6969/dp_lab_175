@@ -1,29 +1,39 @@
 import java.util.UUID;
 
-class Driver {
+public class Driver extends user {
     private String id;
-    private String name;
-    private RideType vehicleType;
+    public String name;
+    private String vehicleType;
     private String location;
     private double rating;
     private boolean availability;
 
-    public Driver(String name, RideType vehicleType, String location) {
-        this.id = UUID.randomUUID().toString();
-        this.name = name;
+    public Driver(int id, String name, String location, double rating, NotificationService notificationService) {
+        super(id, name, location, rating, notificationService);
         this.vehicleType = vehicleType;
-        this.location = location;
-        this.rating = 5.0; // default rating
-        this.availability = true; // default to available
+        this.availability = true;
     }
 
-    public boolean acceptRide(Trip trip) {
-        if (availability && this.vehicleType == trip.getRideType()) {
-            trip.assignDriver(this);
-            System.out.println(name + " accepted the ride.");
-            return true;
-        }
-        return false;
+    @Override
+    public void receiveNotification(String message) {
+        notificationService.sendNotification(this, message);
+    }
+
+
+    public void acceptRide(Trip trip) {
+        trip.setStatus(TripStatus.ACCEPTED);
+        receiveNotification("You have accepted a new ride.");
+    }
+
+    public void updateLocation(String newLocation) {
+
+        this.location = newLocation;
+
+    }
+
+    public void startTrip(Trip trip) {
+        trip.setStatus(TripStatus.ONGOING);
+        receiveNotification("Trip started.");
     }
 
     public void rateRider(Rider rider, double rating) {
@@ -40,5 +50,13 @@ class Driver {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public boolean isAvailable() {
+        return availability;
+    }
+
+    public void setAvailability(boolean availability) {
+        this.availability = availability;
     }
 }

@@ -1,6 +1,6 @@
 import java.util.UUID;
 
-abstract class user {
+public abstract class user {
         protected int id;
         protected String name;
         protected String location;
@@ -15,7 +15,7 @@ abstract class user {
             this.notificationService = notificationService;
         }
 
-        public abstract void receiveNotification(String message);
+    public abstract void receiveNotification(String message);
     }
 
 

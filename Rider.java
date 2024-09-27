@@ -1,23 +1,21 @@
-import java.util.UUID;
+import java.util.Scanner;
 
-class Rider {
-    private String id;
-    private String name;
-    private String location;
-    private double rating;
+public class Rider extends user {
     private PaymentMethod preferredPaymentMethod;
+    Scanner scanner = new Scanner(System.in);
 
-    public Rider(String name, String location, PaymentMethod preferredPaymentMethod) {
-        this.id = UUID.randomUUID().toString();
-        this.name = name;
-        this.location = location;
-        this.rating = 5.0; // default rating
-        this.preferredPaymentMethod = preferredPaymentMethod;
+
+    public Rider(int id, String name, String location, double rating, PaymentMethod preferredPaymentMethod , NotificationService notificationService) {
+        super(id, name, location, rating, notificationService);
+
     }
 
     public Trip requestRide(String pickupLocation, String dropoffLocation, RideType rideType) {
-        System.out.println(name + " requested a " + rideType + " ride from " + pickupLocation + " to " + dropoffLocation);
-        return new Trip(pickupLocation, dropoffLocation, rideType, this);
+        Trip trip = new Trip(pickupLocation, dropoffLocation, rideType, this);
+        trip.setpickUpLocation(pickupLocation);
+        trip.setDropOffLocation(dropoffLocation);
+        trip.assignDriver();
+        return trip;
     }
 
     public void rateDriver(Driver driver, double rating) {
@@ -29,7 +27,37 @@ class Rider {
         return name;
     }
 
+    public void setPreferredPaymentMethod(PaymentMethod preferredPaymentMethod) {
+        this.preferredPaymentMethod = preferredPaymentMethod;
+    }
+
     public PaymentMethod getPreferredPaymentMethod() {
         return preferredPaymentMethod;
+    }
+
+    void makePayment(double amount) {
+        preferredPaymentMethod.processPayment(amount);
+    }
+
+    @Override
+    public void receiveNotification(String message) {
+        notificationService.sendNotification(this, message);
+    }
+
+    public void changePaymentMethod() {
+        System.out.println("Enter 1 for Credit Card, 2 for Cash");
+        int choice = scanner.nextInt();
+        switch (choice) {
+            case 1:
+                setPreferredPaymentMethod(new CreditCard());
+                System.out.println("Payment method is credit card now");
+                break;
+            case 2:
+                setPreferredPaymentMethod(new Cash());
+                System.out.println("Payment method is cash now");
+                break;
+            default:
+                System.out.println("Invalid choice");
+        }
     }
 }

@@ -1,26 +1,27 @@
-import java.util.UUID;
+import java.util.Scanner;
 
 public class main {
     public static void main(String[] args) {
         // Create instances
         PaymentMethod creditCard = new CreditCard();
-        Rider rider = new Rider("Mohtasim Dipto", "IUT", creditCard);
-        Driver driver = new Driver("Messi", RideType.CARPOOL, "Mirpur");
+        NotificationService notificationService = new SMSNotificationService();
 
-        // Request and accept a ride
+
+        Rider rider = new Rider(1, "Rider", "IUT", 5.0, creditCard, notificationService);
         Trip trip = rider.requestRide("IUT", "Mirpur", RideType.CARPOOL);
-        driver.acceptRide(trip);
 
-        // Complete the trip
-        trip.completeTrip();
+        if (trip.driver != null) {
 
-        // Riders and drivers rate each other
-        rider.rateDriver(driver, 5.0);
-        driver.rateRider(rider, 4.0);
+            trip.setStatus(TripStatus.COMPLETED);
+
+            rider.rateDriver(trip.driver, 5.0);
+
+            trip.driver.rateRider(rider, 4.5);
+        }
 
         // Admin managing drivers
         Admin admin = new Admin("Batman");
-        admin.manageDriver(driver, "deactivate");
+
         admin.handleDispute(trip, "Fare dispute");
     }
 }
